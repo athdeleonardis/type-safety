@@ -4,7 +4,7 @@
   "description": "A library for type safety (validation and reformatting) in JavaScript, written in TypeScript.",
   "scripts": {
     "build": "npx tsc",
-    "test": "npm run build && node dist/test/schema/test-type-string.js"
+    "test": "npm run build && node dist/test/schema/test-type-string.js && node dist/test/schema/test-schema-create.js"
   },
   "keywords": [],
   "author": "",

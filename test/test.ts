@@ -1,3 +1,7 @@
+/**
+ * The class representation of the test to be run.
+ * The test script an instance of this class is located in should call the '.run' method to run the test.
+ */
 class Test {
   name: string;
 
@@ -27,6 +31,12 @@ class Test {
       const error = err as typeof err & Error;
       this.logFailure(stepName, error);
     }
+  }
+
+  assertTrue(stepName: string, value: any) {
+    if (value)
+      return;
+    this.logFailure(stepName);
   }
 
   run(func: () => any) {

@@ -50,7 +50,27 @@ export enum ESchemaType {
  * Unrequired.
  * Used as the type for whether a schema is unrequired or nullable.
  */
-export type TUnrequired = boolean | undefined;
+export type TUnrequired = true | undefined;
+
+/**
+ * Extends Undefined.
+ * Go from T, a union, to true if and only if T extends undefined.
+ * Otherwise, go to undefined.
+ */
+export type TExtendsUndefined<T> = true extends (T extends undefined ? true : never) ? true : undefined;
+
+/**
+ * Extends Null.
+ * Go from T, a union, to true if and only if T extends null.
+ * Otherwise, go to undefined.
+ */
+export type TExtendsNull<T> = true extends (T extends null ? true : never) ? true : undefined;
+
+/**
+ * Isolate Defined.
+ * Go from T, a union, to a union of all types in T that aren't 'undefined' or 'null'.
+ */
+type TIsolateDefined<T> = T extends undefined ? never : T extends null ? never : T;
 
 /**
  * Schema Format.
@@ -125,14 +145,7 @@ export type TSchema<U extends TUnrequired, N extends TUnrequired, T> =
  * Schema From Type.
  * Converts from typescript types to a recursive schema wrapper of the type.
  */
-export type TSchemaFromType<T> =
-  T extends undefined
-    ? T extends null
-      ? TSchemaFromTypeInternal<true,true,T>
-      : TSchemaFromTypeInternal<true,undefined,T>
-    : T extends null
-      ? TSchemaFromTypeInternal<undefined,true,T>
-      : TSchemaFromTypeInternal<undefined,undefined,T>;
+export type TSchemaFromType<T> = TSchemaFromTypeInternal<TExtendsUndefined<T>, TExtendsNull<T>, TIsolateDefined<T>>;
 
 /**
  * Schema From Type Internal.
@@ -140,7 +153,7 @@ export type TSchemaFromType<T> =
  * Handles decision chain for conversion from the type to the schema type.
  * 'TSchemaFromType' handles union of undefined or null to 'undefined-able' and 'nullable' parameters.
  */
-type TSchemaFromTypeInternal<U extends TUnrequired, N extends TUnrequired,T> =
+type TSchemaFromTypeInternal<U extends TUnrequired, N extends TUnrequired, T> =
     T extends (infer A)[]
       ? TSchemaArray<U, N, TSchemaFromType<A>>
   : T extends {[key: string]: any}
